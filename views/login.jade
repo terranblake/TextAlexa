@@ -1,14 +1,22 @@
 extends layout
 
 block content
-  h1= title
-  p= error
+  div(class='row')
+    div(class='large-12 columns text-center')
+      h1(style='margin-top:25px;margin-bottom:5px;')= title
+      hr(style="margin-top:5px;")
+  div(class='row')
+    div(class='large-12 columns')
+      p= error
   form(name="login", method="post")
-    div.input
-        span.label Email
-        input(type="email", name="email")
-    div.input
-        span.label Password
-        input(type="password", name="password")
-    div.actions
-        input(type="submit", value="Login")
+    div(class='row')
+      div(class='small-12 columns')
+        label Email
+        input(type='email', placeholder='email@email.com', name='email')
+    div(class="row")
+      div(class='small-12 columns')
+        label Password
+        input(type='password', placeholder='password', name='password')
+    div(class="row")
+      div(class='small-12 columns')
+        input(type="submit", value="LOGIN", class="expanded button")
