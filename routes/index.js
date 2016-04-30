@@ -2,6 +2,9 @@ var express = require('express');
 var guid = require('guid');
 var sqlite3 = require('sqlite3');
 var bcrypt = require('bcrypt-nodejs');
+var twilio = require('twilio');
+var client = new twilio.RestClient(process.env.TWILIO_SID, process.env.TWILIO_SECRET);
+
 var router = express.Router();
 
 /* GET home page. */
@@ -16,9 +19,18 @@ router.get('/login', function(req, res, next) {
 });
 
 router.get('/alexa', function(req, res, next) {
-  console.log(req.query);  
-  res.send({
-	message: 'made it'
+  console.log(req.query);
+
+  client.messages.create({
+      to:'+17857600631',
+      from:'+19138004576',
+      body:'This is my first twilio message.'
+  }, function(error, message) {
+      if (error) {
+        res.status(500).send(error);
+      } else {
+        res.send(message);
+      }
   });
 });
 
