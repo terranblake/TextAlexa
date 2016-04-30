@@ -4,9 +4,13 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var orm = require("orm");
+var passport = require('passport')
+var LocalStrategy = require('passport-local').Strategy;
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var api = require('./routes/api');
 
 var app = express();
 
@@ -24,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -31,6 +36,25 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+// var Person;
+
+/* Custom */
+/*
+
+*/
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('database.sqlite');
+db.run("CREATE TABLE IF NOT EXISTS `person` (`id`	INTEGER NOT NULL, `email`	TEXT NOT NULL UNIQUE, `password`	TEXT NOT NULL, `name`	TEXT NOT NULL, `alexa_token`	TEXT UNIQUE, PRIMARY KEY(id));");
+db.close();
+
+// setTimeout(function() {
+//   orm.Person.find({}, function(err, results) {
+//     if(err) throw err;
+//     console.log(results);
+//   });
+// }, 1000);
+/* End Custom */
 
 // error handlers
 
