@@ -15,6 +15,13 @@ router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Text Alexa - Login' });
 });
 
+router.get('/alexa', function(req, res, next) {
+  console.log(req.query);  
+  res.send({
+	message: 'made it'
+  });
+});
+
 router.post('/login', function(req, res, next) {
   var amazonUrl = "http://localhost:3000/";
   var access_token = guid.raw();
