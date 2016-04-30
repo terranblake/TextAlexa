@@ -22,11 +22,12 @@ router.get('/alexa', function(req, res, next) {
   console.log(req.query);
 
   client.messages.create({
-      to:'+17857600631',
-      from:'+19138004576',
-      body:'This is my first twilio message.'
+      to: '+17857600631',
+      from: '+19138004576',
+      body: req.query.message
   }, function(error, message) {
       if (error) {
+        console.log(error);
         res.status(500).send(error);
       } else {
         res.send(message);
