@@ -13,23 +13,84 @@ router.get('/', function(req, res, next) {
 
 /* POST register user */
 router.post('/register', function(req, res, next) {
-  if(isValidRegisterJson(req.query)) {
-    var db = new sqlite3.Database('database.sqlite');
-    db.run("INSERT INTO person (email, password, name) VALUES ($email,$password,$name)", {
-          $email: req.query.email,
-          $password: bcrypt.hashSync(req.query.password),
-          $name: req.query.name
-    });
-    db.close();
-    res.send({
-      message: "Success"
-    })
+  if(isValidRegisterJson(req.body)) {
+    try {
+      var db = new sqlite3.Database('database.sqlite');
+      db.run("INSERT INTO person (email, password, name) VALUES ($email,$password,$name);", {
+            $email: req.body.email,
+            $password: bcrypt.hashSync(req.body.password),
+            $name: req.body.name
+      }, function(err) {
+        console.log(err);
+        if(err) {
+          res.status(500).send(err);
+          return;
+        }
+
+        db.all("SELECT * FROM person WHERE email='" + req.body.email + "';", function(err, rows) {
+            if(!rows) {
+              res.status(500).send({
+                error: "Internal user error"
+              });
+            } else {
+              delete rows[0].password;
+              res.send(rows[0]);
+            }
+        });
+      });
+      db.close();
+    } catch (err) {
+      res.status(500).send(err);
+    }
   } else {
     res.status(500).send({
-      error: "Missing url parameters."
+      error: "Missing body parameters."
     });
   }
 });
+
+/* POST upload contacts */
+router.post('/contacts', function(req, res, next) {
+  if(isValidContactsJson(req.body)) {
+    var db = new sqlite3.Database('database.sqlite');
+    db.all("SELECT * FROM person WHERE email='" + req.body.email + "'", function(err,rows){
+      if(!rows) {
+        res.status(500).send({
+          error: "No user found with the provided credentials"
+        });
+      } else {
+        if(bcrypt.compareSync(req.body.password, rows[0].password)) {
+          // todo insert contacts
+          var userId = rows[0].id;
+          db.serialize(function() {
+            var stmt = db.prepare("INSERT INTO contacts (user_id, name, phone) VALUES (?,?,?);");
+            req.body.contacts.forEach(function(contact) {
+              if(contact.name && contact.phone) {
+                stmt.run(userId, contact.name, contact.phone);
+              }
+            });
+            stmt.finalize();
+            res.send({
+              message: req.body.contacts.length + " contacts added successfully"
+            })
+          });
+        } else {
+          res.status(500).send({
+            error: "No user found with the provided credentials"
+          });
+        }
+      }
+    });
+  }
+});
+
+function isValidContactsJson(params) {
+  if(!params.email || !params.password || !params.contacts || params.contacts.length == 0) {
+    return false;
+  }
+
+  return true;
+}
 
 /* POST login user */
 router.post('/login', function(req, res, next) {
@@ -45,7 +106,7 @@ router.post('/login', function(req, res, next) {
       });
     } else {
       if(bcrypt.compareSync(password, rows[0].password)) {
-        delete rows[0].password;
+        delete rows[0].password;np
         res.send(rows[0]);
       } else {
         res.status(500).send({
