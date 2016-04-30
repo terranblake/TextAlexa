@@ -36,7 +36,9 @@ router.post('/login', function(req, res, next) {
         /* TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO */
         //TODO: save access token into user DB
         /* TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO */
-        res.redirect('/?state='+req.query.state + "&access_token=" + access_token);
+	var redirectUrl = 'https://pitangui.amazon.com/spa/skill/account-linking-status.html?vendorId=MRTK7KNRCP2HQ#state='+req.query.state + "&access_token=" + access_token + "&token_type=Bearer";
+        console.log(redirectUrl);
+	res.redirect(redirectUrl);
       } else {
         res.render('login', { title: 'Text Alexa - Login', error: "No user found with the provided credentials" });
       }
