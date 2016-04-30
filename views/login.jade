@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+  p= error
+  form(name="login", method="post")
+    div.input
+        span.label Email
+        input(type="email", name="email")
+    div.input
+        span.label Password
+        input(type="password", name="password")
+    div.actions
+        input(type="submit", value="Login")
