@@ -33,12 +33,15 @@ router.post('/login', function(req, res, next) {
       res.render('login', { title: 'Text Alexa - Login', error: "No user found with the provided credentials" });
     } else {
       if(bcrypt.compareSync(password, rows[0].password)) {
-        /* TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO */
-        //TODO: save access token into user DB
-        /* TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO */
-	var redirectUrl = 'https://pitangui.amazon.com/spa/skill/account-linking-status.html?vendorId=MRTK7KNRCP2HQ#state='+req.query.state + "&access_token=" + access_token + "&token_type=Bearer";
-        console.log(redirectUrl);
-	res.redirect(redirectUrl);
+
+        db.run("UPDATE person SET alexa_token = $token WHERE id=$id;", {
+          $token: access_token,
+          $id: rows[0].id
+        });
+
+	      var redirectUrl = 'https://pitangui.amazon.com/spa/skill/account-linking-status.html?vendorId=MRTK7KNRCP2HQ#state='+req.query.state
+        + "&access_token=" + access_token + "&token_type=Bearer";
+	      res.redirect(redirectUrl);
       } else {
         res.render('login', { title: 'Text Alexa - Login', error: "No user found with the provided credentials" });
       }
