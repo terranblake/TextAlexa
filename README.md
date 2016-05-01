@@ -1,2 +1,2 @@
 # TextAlexa
-Text Alex for Amazon Echo
+Text Alexa for Amazon Echo
